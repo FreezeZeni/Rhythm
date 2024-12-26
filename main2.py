@@ -1,32 +1,31 @@
-from pynput import keyboard
+import ctypes
 
-selected_key = None
+def is_mouse_clicked(button="left"):
+    # Словарь кнопок мыши и их виртуальных кодов
+    mouse_buttons = {
+        "left": 0x01,    # Левая кнопка мыши
+        "right": 0x02,   # Правая кнопка мыши
+        "middle": 0x04,  # Средняя кнопка мыши (колесико)
+        "x1": 0x05,      # Боковая кнопка мыши 1 (назад)
+        "x2": 0x06       # Боковая кнопка мыши 2 (вперед)
+    }
+    # Проверяем, есть ли заданная кнопка в словаре
+    if button not in mouse_buttons:
+        raise ValueError("Некорректная кнопка! Используйте: 'left', 'right', 'middle', 'x1', 'x2'")
+    
+    # Проверяем состояние кнопки мыши
+    return ctypes.windll.user32.GetAsyncKeyState(mouse_buttons[button]) != 0
 
-def on_custom_key():
-    print(f"Выбранная клавиша '{selected_key}' была нажата!")
-
-def on_press_select(key):
-    global selected_key
-    try:
-        selected_key = key
-        print(f"Вы выбрали клавишу: {key}")
-        return False
-    except Exception as e:
-        print(f"Ошибка при выборе клавиши: {e}")
-
-
-def on_press(key):
-    global selected_key
-    try:
-        if key == selected_key:
-            on_custom_key()
-    except Exception as e:
-        print(f"Ошибка при обработке нажатия: {e}")
-
-print("Нажмите любую клавишу, которую хотите выбрать для выполнения действия...")
-with keyboard.Listener(on_press=on_press_select) as listener:
-    listener.join()
-
-print(f"Слушаем нажатия клавиши '{selected_key}'. Нажмите ESC для выхода.")
-with keyboard.Listener(on_press=on_press) as listener:
-    listener.join()
+while True:
+    if is_mouse_clicked("left"):
+        print("Левая кнопка мыши нажата!")
+    elif is_mouse_clicked("right"):
+        print("Правая кнопка мыши нажата!")
+    elif is_mouse_clicked("middle"):
+        print("Средняя кнопка мыши нажата!")
+    elif is_mouse_clicked("x1"):
+        print("Боковая кнопка мыши 1 нажата!")
+    elif is_mouse_clicked("x2"):
+        print("Боковая кнопка мыши 2 нажата!")
+    else:
+        print("Кнопки мыши не нажаты.")
