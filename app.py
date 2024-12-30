@@ -123,17 +123,12 @@ def on_key_press_select(key):
     keyy = 'is_keyboard'
     selected_key = key
     print(f"Вы выбрали клавишу: {key}")
+    selected_key = str(selected_key).replace("'", "")
+    selected_key = str(selected_key).replace("Key.", "")
     Select_Key.text = selected_key
     Select_Key.update()
     stop_event.set()
     return False
-    # try:
-        # selected_key = key
-        # print(f"Вы выбрали клавишу: {key}")
-        # stop_event.set()
-        # return False
-    # except Exception as e:
-        # print(f"Ошибка при выборе клавиши: {e}")
 
 
 def selecter_mouse():
@@ -179,6 +174,7 @@ def keyboard_clicker():
 def main():
     global mouse_key, keyy, selected_key
     stop_event.clear()
+    selected_key = None
     print("selecting")
     thread1 = threading.Thread(target=selecter_mouse)
     thread2 = threading.Thread(target=selecter_keyboard)
@@ -204,6 +200,7 @@ def main():
         mouse_clicker()
     elif keyy == 'is_keyboard':
         selected_key = str(selected_key).replace("'", "")
+        selected_key = str(selected_key).replace("Key.", "")
         print(selected_key)
         keyboard_clicker()
 
