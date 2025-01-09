@@ -89,7 +89,6 @@ def app(page: ft.Page):
         label="{value}",
         on_change=lambda e: cps_text_bar_update(e)
         )
-        
     
     Activation_test = ft.Text(
         "Activation Key:", 
@@ -136,16 +135,20 @@ def selecter_mouse():
         while not stop_event.is_set():
             mouse_listener.join(0.1)
 
+
 def selecter_keyboard():
     with keyboard.Listener(on_press=on_key_press_select) as keyboard_listener:
         while not stop_event.is_set():
             keyboard_listener.join(0.1)
 
+
 def is_mouse_clicked():
     return ctypes.windll.user32.GetAsyncKeyState(mouse_key) != 0
 
+
 def is_keyboard_clicked():
     return kb.is_pressed(selected_key)
+
 
 def mouse_clicker():
     global cps, button
@@ -159,6 +162,7 @@ def mouse_clicker():
                     active_mouse.click(button)
                     start_time = current_time
 
+
 def keyboard_clicker():
     global cps, button
     while True:
@@ -170,6 +174,7 @@ def keyboard_clicker():
                 if current_time - start_time >= interval:
                     active_mouse.click(button)
                     start_time = current_time
+
 
 def main():
     global mouse_key, keyy, selected_key
