@@ -101,7 +101,33 @@ def app(page: ft.Page):
         on_click=lambda e: main(),
         data=0,
         )
-    first_row = ft.Row([cps_text_bar, Clicks, Activation_mode, Activation_test, Select_Key])
+    
+    
+    def on_click_up(e):
+        first_row = ft.Row([cps_text_bar, Clicks, Activation_mode, Activation_test, Select_Key, upper_button])
+        
+        page.add(secondspace)
+    
+    upper_button_image = ft.Image(
+        src=r"ICONS\128_plus.png",
+        width=24,
+        height=24,
+        fit=ft.ImageFit.CONTAIN,
+    )
+    
+    upper_button = ft.Container(
+        content=upper_button_image,
+        width=40,
+        height=40,
+        padding=5,
+        alignment=ft.alignment.center,
+        on_click=on_click_up,
+        border_radius=ft.border_radius.all(5),
+        bgcolor=ft.Colors.BLUE_200,
+    )
+    
+    
+    first_row = ft.Row([cps_text_bar, Clicks, Activation_mode, Activation_test, Select_Key, upper_button])
     
     page.add(first_row, Cps_Slider)
 
