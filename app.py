@@ -120,38 +120,12 @@ def app(page: ft.Page):
         )
 
     Select_Key = ft.OutlinedButton(
-        "Select...", 
+        "Select...",
         on_click=lambda e: select_key_thread(),
         data=0,
         )
     
-    
-    def on_click_up(e):
-        print('New space clicked')
-
-    try:
-        new_space_image = ft.Image(
-            src=r"ICONS\128_plus.png",
-            width=24,
-            height=24,
-            fit=ft.ImageFit.CONTAIN,
-        )
-    except Exception:
-        new_space_image = ft.Icon(ft.icons.ADD, size=24)
-    
-    new_space = ft.Container(
-        content=new_space_image,
-        width=40,
-        height=40,
-        padding=5,
-        alignment=ft.alignment.center,
-        on_click=lambda e: on_click_up(e),
-        border_radius=ft.border_radius.all(5),
-        bgcolor=ft.Colors.BLUE_200,
-    )
-    
-    
-    first_row = ft.Row([cps_text_bar, Clicks, Activation_mode, Activation_test, Select_Key, new_space])
+    first_row = ft.Row([cps_text_bar, Clicks, Activation_mode, Activation_test, Select_Key])
     
     page.add(first_row, Cps_Slider)
 
@@ -267,10 +241,11 @@ def select_key_thread():
 def main():
     global mouse_key, keyy, selected_key, toggle_active, clicker_stop_event
 
-    # Останавливаем предыдущий поток кликера, если он существует
+    Select_Key.text = "..."
+    Select_Key.update()
     clicker_stop_event.set()
-    time.sleep(0.2)  # Даем время для остановки
-    clicker_stop_event = threading.Event()  # Создаем новый объект события
+    time.sleep(0.2)
+    clicker_stop_event = threading.Event()
 
     with toggle_lock:
         toggle_active = False
@@ -285,8 +260,7 @@ def main():
     if selected_key is None:
         print("No key selected")
         return
-
-    # Запускаем поток для самих кликов
+    
     clicker_thread = threading.Thread(target=auto_click_worker, daemon=True)
     clicker_thread.start()
 
