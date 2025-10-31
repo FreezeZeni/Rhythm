@@ -1,3 +1,5 @@
+# key_selector.py
+import ctypes
 import platform
 import threading
 
@@ -5,6 +7,7 @@ from pynput import mouse, keyboard
 from pynput.mouse import Button
 
 IS_MAC = platform.system() == "Darwin"
+IS_WINDOWS = platform.system() == "Windows"
 HAVE_QUARTZ = False
 if IS_MAC:
     try:
@@ -181,6 +184,26 @@ class KeySelector:
 
     def get_input_checker(self):
         if self.key_type == "mouse":
+            if IS_WINDOWS and isinstance(self.selected_key, Button):
+                button_to_vk = {
+                    Button.left: 0x01,
+                    Button.right: 0x02,
+                    Button.middle: 0x04,
+                    Button.x1: 0x05,
+                    Button.x2: 0x06,
+                }
+                vk_code = button_to_vk.get(self.selected_key)
+                if vk_code is not None:
+                    user32 = ctypes.windll.user32
+                    user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
+                    user32.GetAsyncKeyState.restype = ctypes.c_short
+
+                    def checker():
+                        return bool(user32.GetAsyncKeyState(vk_code) & 0x8000)
+
+                    checker.is_mouse = True
+                    return checker
+
             if IS_MAC and HAVE_QUARTZ and isinstance(self.selected_key, _MouseLabel):
                 target_num = self.selected_key.number
                 state = {"down": False}
@@ -203,7 +226,9 @@ class KeySelector:
 
                 self._monitor = mouse.Listener(on_click=on_click)
                 self._monitor.start()
-                return lambda: state["down"]
+                fn = lambda: state["down"]
+                fn.is_mouse = True
+                return fn
 
             return lambda: False
 
@@ -225,6 +250,8 @@ class KeySelector:
 
             self._monitor = keyboard.Listener(on_press=on_press, on_release=on_release)
             self._monitor.start()
-            return lambda: state["down"]
+            fn = lambda: state["down"]
+            fn.is_mouse = False       # <— ДОБАВЛЕНО
+            return fn
 
         return lambda: False

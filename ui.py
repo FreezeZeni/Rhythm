@@ -1,3 +1,4 @@
+# ui.py
 import threading
 import flet as ft
 from pynput.mouse import Button
